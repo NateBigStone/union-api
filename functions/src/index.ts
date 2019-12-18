@@ -3,6 +3,10 @@ import * as admin from 'firebase-admin';
 import * as express from 'express';
 import * as bodyParser from "body-parser";
 
+
+// TODO: test puts
+
+
 admin.initializeApp(functions.config().firebase);
 const db = admin.firestore(); // Add this
 
@@ -131,7 +135,7 @@ app.put('/rsvps/:id', async (request, response) => {
     if (!rsvpId) throw new Error('ID is blank');
 
     const data = request.body;
-    const _rsvpRef = await db.collection('rsvps')
+    const rsvpRef = await db.collection('rsvps')
         .doc(rsvpId)
         .set(data, { merge: true });
 
@@ -184,7 +188,11 @@ app.post('/wedding', async (request, response) => {
       hashtag,
       coupleEmail, 
       description, 
-      instructions } = request.body;
+      instructions,
+      weddingRegistry,
+      mealChoiceOne,
+      mealChoiceTwo,
+      mealChoiceThree } = request.body;
 
     const weddingCode = (surname.slice(0,4) + id.randomBytes(2).toString('hex')).toUpperCase();
 
@@ -198,7 +206,9 @@ app.post('/wedding', async (request, response) => {
       hashtag,
       coupleEmail, 
       description, 
-      instructions 
+      instructions,
+      weddingRegistry,
+      'meals': {'mealOne': mealChoiceOne, 'mealTwo': mealChoiceTwo, 'mealThree': mealChoiceThree} 
     } 
     const weddingRef = await db.collection('wedding').doc(weddingCode).set(data);
     const weddingResp = await db.collection('wedding').doc(weddingCode).get();
